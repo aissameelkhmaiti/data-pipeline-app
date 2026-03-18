@@ -1,62 +1,163 @@
 import fs from "fs";
 import csv from "csv-parser";
+import path from "path";
+
 import * as movieRepository from "../repositories/movie.repository";
+import * as pipelineRepository from "../repositories/pipeline.repository";
 
-export const processImportFile = async (filePath: string, fileType: string) => {
+// ----------- UTILITAIRES -----------
+
+const parseDuration = (value: any): number => {
+  if (!value) return 0;
+
+  if (typeof value === "number") return value;
+
+  if (typeof value === "string") {
+    const cleaned = value.replace(/\D/g, "");
+    return parseInt(cleaned) || 0;
+  }
+
+  return 0;
+};
+
+const parseReleaseDate = (value: any): string => {
+  if (!value) return "1900-01-01";
+
+  const year = Number(value);
+
+  if (isNaN(year)) return "1900-01-01";
+
+  return `${year}-01-01`;
+};
+
+// ----------- PIPELINE ETL -----------
+
+export const processImportFile = async (
+  originalname: string,
+  mimetype: string
+) => {
+
   const results: any[] = [];
+  const fileName = originalname;
 
-  // fonction de transformation
+  // -------- TRANSFORM --------
   const transformMovies = (movies: any[]) => {
     return movies.map((movie) => ({
-      title: movie.title,
-      release_date: movie.release_date,
-      duration: parseInt(movie.duration), // "148 min" -> 148
-      genre: movie.genre,
+      title: movie.title || movie.Title,
+      release_date: parseReleaseDate(
+        movie.release_date || movie.year || movie.Year
+      ),
+      duration: parseDuration(movie.duration || movie.Duration),
+      genre: movie.genre || movie.Genre || "",
     }));
   };
 
-  // JSON IMPORT
-  if (fileType === "application/json") {
-    const data = fs.readFileSync(filePath, "utf-8");
+  try {
 
-    const movies = JSON.parse(data);
+    // ================= JSON =================
 
-    console.log("movies extracted:", movies);
+    if (mimetype === "application/json") {
 
-    // TRANSFORM
-    const cleanedMovies = transformMovies(movies);
+      const data = fs.readFileSync(originalname, "utf-8");
 
-    console.log("movies transformed:", cleanedMovies);
+      const movies = JSON.parse(data);
 
-    // LOAD
-    await movieRepository.bulkInsertMovies(cleanedMovies);
+      console.log(" JSON extracted:", movies);
 
-    return cleanedMovies.length;
-  }
+      // TRANSFORM
+      const cleanedMovies = transformMovies(movies);
 
-  // CSV IMPORT
-  if (fileType === "text/csv") {
-    return new Promise((resolve, reject) => {
-      fs.createReadStream(filePath)
-        .pipe(csv())
-        .on("data", (data) => results.push(data))
-        .on("end", async () => {
-          try {
-            console.log("csv extracted:", results);
+      console.log(" JSON transformed:", cleanedMovies);
 
-            // TRANSFORM
-            const cleanedMovies = transformMovies(results);
+      // LOAD
+      await movieRepository.bulkInsertMovies(cleanedMovies);
 
-            console.log("csv transformed:", cleanedMovies);
+      // LOG PIPELINE
+      await pipelineRepository.createPipelineLog(
+        fileName,
+        cleanedMovies.length,
+       mimetype,
+        "success"
+      );
 
-            // LOAD
-            await movieRepository.bulkInsertMovies(cleanedMovies);
+      return cleanedMovies.length;
+    }
 
-            resolve(cleanedMovies.length);
-          } catch (err) {
-            reject(err);
-          }
-        });
-    });
+    // ================= CSV =================
+
+    if (mimetype === "text/csv" || mimetype === "application/vnd.ms-excel") {
+
+      return new Promise((resolve, reject) => {
+
+        fs.createReadStream(originalname)
+          .pipe(csv())
+
+          .on("data", (data) => results.push(data))
+
+          .on("end", async () => {
+
+            try {
+
+              console.log(" CSV extracted:", results);
+
+              // TRANSFORM
+              const cleanedMovies = transformMovies(results);
+
+              console.log(" CSV transformed:", cleanedMovies);
+
+              // LOAD
+              await movieRepository.bulkInsertMovies(cleanedMovies);
+
+              // LOG PIPELINE
+              await pipelineRepository.createPipelineLog(
+                fileName,
+                cleanedMovies.length,
+                mimetype,
+                "success"
+              );
+
+              resolve(cleanedMovies.length);
+
+            } catch (error) {
+
+              await pipelineRepository.createPipelineLog(
+                fileName,
+                0,
+                mimetype,
+                "failed"
+              );
+
+              reject(error);
+            }
+
+          })
+
+          .on("error", async (error) => {
+
+            await pipelineRepository.createPipelineLog(
+              fileName,
+              0,
+              mimetype,
+              "failed"
+            );
+
+            reject(error);
+          });
+
+      });
+    }
+
+    throw new Error("Format de fichier non supporté");
+
+  } catch (error) {
+
+    await pipelineRepository.createPipelineLog(
+      fileName,
+      0,
+      mimetype,
+      "failed"
+    );
+
+    throw error;
   }
 };

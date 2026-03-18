@@ -7,6 +7,7 @@ export interface Cinema {
   country: string;
   created_at: Date;
   la_salle:string;
+  capacite:string;
   
 }
 
@@ -16,6 +17,7 @@ export interface CreateCinemaInput {
   city: string;
   country: string;
   la_salle:string;
+  capacite:string;
 }
 
 // Interface pour mettre à jour un cinéma (optionnel)
@@ -24,4 +26,5 @@ export interface UpdateCinemaInput {
   city?: string;
   country?: string;
   la_salle?:string;
+  capacite?:string;
 }

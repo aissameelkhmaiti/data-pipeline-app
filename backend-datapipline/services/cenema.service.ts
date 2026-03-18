@@ -9,11 +9,11 @@ export const CinemaService = {
     return await CinemaRepository.getById(id);
   },
 
-  createCinema: async (data: { name: string; city: string; country: string ; la_salle: string}) => {
+  createCinema: async (data: { name: string; city: string; country: string ; la_salle: string ; capacite: string}) => {
     return await CinemaRepository.create(data);
   },
 
-  updateCinema: async (id: number, data: { name?: string; city?: string; country?: string ;la_salle?: string}) => {
+  updateCinema: async (id: number, data: { name?: string; city?: string; country?: string ;la_salle?: string ;capacite?: string}) => {
     return await CinemaRepository.update(id, data);
   },
 

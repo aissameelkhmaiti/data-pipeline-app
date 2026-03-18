@@ -20,8 +20,18 @@ export const createMovieController = async (req: Request, res: Response) => {
 
 export const getAllMoviesController = async (req: Request, res: Response) => {
   try {
-    const movies = await MovieService.getAllMovies();
-    res.status(200).json({ movies });
+    // Récupération et conversion des paramètres (ex: /api/movies?page=1&limit=5)
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+
+    const result = await MovieService.getMovies(limit, page);
+
+    res.status(200).json({
+      movies: result.movies,
+      totalPages: result.totalPages,
+      currentPage: page,
+      totalCount: result.totalCount
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

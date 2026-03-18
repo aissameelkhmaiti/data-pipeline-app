@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: aissame2001
+      POSTGRES_DB: data_pipline
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: backend_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: postgres   # ⚠️ IMPORTANT
+      DB_USER: postgres
+      DB_PASSWORD: aissame2001
+      DB_NAME: data_pipline
+      DB_PORT: 5432
+      JWT_SECRET: mysecretkey123
+      JWT_EXPIRES_IN: 1d
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_app
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

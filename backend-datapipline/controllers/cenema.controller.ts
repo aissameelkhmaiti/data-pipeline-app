@@ -14,8 +14,9 @@ export const CinemaController = {
   },
 
   create: async (req: Request, res: Response) => {
-    const { name, city, country ,la_salle } = req.body;
-    const cinema = await CinemaService.createCinema({ name, city, country ,la_salle });
+    const { name, city, country ,la_salle , capacite } = req.body;
+    console.log(req.body)
+    const cinema = await CinemaService.createCinema({ name, city, country ,la_salle , capacite});
     res.status(201).json({ cinema });
   },
 

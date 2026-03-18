@@ -24,13 +24,13 @@ describe("Showtime API CRUD", () => {
     // Créer un film et un cinéma pour les showtimes
     const resMovie = await pool.query(
   `INSERT INTO movies (title, description, release_date, genre) VALUES ($1, $2, $3, $4) RETURNING *`,
-  ["Movie Test", "Description Movie", "2026-01-01", "Action"] // ou n'importe quel genre de test
+  ["Movie Test 222233", "Description Movie", "2026-01-01", "Action"] // ou n'importe quel genre de test
 );
     movieId = resMovie.rows[0].id;
 
     const resCinema = await pool.query(
       `INSERT INTO cinemas (name, city, country) VALUES ($1,$2,$3) RETURNING *`,
-      ["Cinema Test", "Casablanca", "Morocco"]
+      ["Cinema Test 22233", "Casablanca", "Morocco"]
     );
     cinemaId = resCinema.rows[0].id;
   });

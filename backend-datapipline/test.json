@@ -24,9 +24,35 @@
     "genre": "Crime"
   },
   {
-    "title": "The Matrix",
+    "title": "The Matrix 2",
+    "release_date": "1999-03-31",
+    "duration": "136 min",
+    "genre": "Action"
+  },
+   {
+    "title": "The Matrix 3",
+    "release_date": "1999-03-31",
+    "duration": "136 min",
+    "genre": "Action"
+  },
+  {
+    "title": "The Matrix 3",
+    "release_date": "1999-03-31",
+    "duration": "136 min",
+    "genre": "Action"
+  },
+  {
+    "title": "The Matrix 344",
     "release_date": "1999-03-31",
     "duration": "136 min",
     "genre": "Action"
   }
+  , 
+  {
+    "title": "The Matrix 344 55",
+    "release_date": "1999-03-31",
+    "duration": "136 min",
+    "genre": "Action"
+  }
+
 ]

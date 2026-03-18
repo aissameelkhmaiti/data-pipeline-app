@@ -12,9 +12,21 @@ export const createMovie = async (input: CreateMovieInput): Promise<Movie> => {
   return res.rows[0];
 };
 
-export const getAllMovies = async (): Promise<Movie[]> => {
-  const res = await pool.query(`SELECT * FROM movies ORDER BY created_at DESC`);
-  return res.rows;
+export const getMoviesPaginated = async (limit: number, offset: number) => {
+  // 1. Récupérer les données segmentées
+  const moviesQuery = await pool.query(
+    `SELECT * FROM movies ORDER BY id DESC LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  );
+
+  // 2. Récupérer le nombre total pour calculer les pages
+  const countQuery = await pool.query(`SELECT COUNT(*) FROM movies`);
+  const totalCount = parseInt(countQuery.rows[0].count);
+
+  return {
+    movies: moviesQuery.rows,
+    totalCount
+  };
 };
 
 export const getMovieById = async (id: number): Promise<Movie | null> => {

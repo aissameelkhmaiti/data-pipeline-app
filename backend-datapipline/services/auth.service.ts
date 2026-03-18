@@ -26,13 +26,13 @@ export const loginUser = async (data: LoginUserInput) => {
   const user = await findUserByEmail(data.email);
 
   if (!user) {
-    throw new Error("Invalid credentials");
+    throw new Error("le utilisateur n'est pas exist");
   }
 
   const isMatch = await bcrypt.compare(data.password, user.password);
 
   if (!isMatch) {
-    throw new Error("Invalid credentials");
+    throw new Error("email ou mots de passe incorrect");
   }
 
   const token = generateToken(user.id);

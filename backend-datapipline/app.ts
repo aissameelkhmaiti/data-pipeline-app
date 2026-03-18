@@ -5,7 +5,7 @@ import authRoutes from "./routes/auth.routes";
 import movieRoutes from "./routes/movie.routes";
 import cinemaRoutes from "./routes/cinema.routes"
 import ShowtimeRoutes from "./routes/showtime.routes"
- 
+import pipelineRoutes from "./routes/pipeline.routes";
 
 dotenv.config();
 
@@ -20,6 +20,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/movies", movieRoutes);
 app.use("/api/cinemas", cinemaRoutes);
 app.use("/api/showtimes", ShowtimeRoutes);
+app.use("/api/pipeline", pipelineRoutes);
 
 
 export default app;

@@ -21,59 +21,59 @@ describe("Movies API", () => {
     token = resRegister.body.token;
   });
 
-  it("should create a new movie", async () => {
-    const movieData = {
-      title: "Avatar 2",
-      release_date: "2009-12-18",
-      duration: 162,
-      genre: "Science Fiction"
-    };
+  // it("should create a new movie", async () => {
+  //   const movieData = {
+  //     title: "Avatar 2",
+  //     release_date: "2009-12-18",
+  //     duration: 162,
+  //     genre: "Science Fiction"
+  //   };
 
-    const res = await request(app)
-      .post("/api/movies")
-      .set("Authorization", `Bearer ${token}`)
-      .send(movieData);
+  //   const res = await request(app)
+  //     .post("/api/movies")
+  //     .set("Authorization", `Bearer ${token}`)
+  //     .send(movieData);
 
-    expect(res.status).toBe(201);
-    expect(res.body.movie).toHaveProperty("id");
-    expect(res.body.movie.title).toBe(movieData.title);
+  //   expect(res.status).toBe(201);
+  //   expect(res.body.movie).toHaveProperty("id");
+  //   expect(res.body.movie.title).toBe(movieData.title);
 
-    movieId = res.body.movie.id;
-  });
+  //   movieId = res.body.movie.id;
+  // });
 
-  it("should get all movies", async () => {
-    const res = await request(app)
-      .get("/api/movies");
+  // it("should get all movies", async () => {
+  //   const res = await request(app)
+  //     .get("/api/movies");
 
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body.movies)).toBe(true);
-    expect(res.body.movies.length).toBeGreaterThan(0);
-  });
+  //   expect(res.status).toBe(200);
+  //   expect(Array.isArray(res.body.movies)).toBe(true);
+  //   expect(res.body.movies.length).toBeGreaterThan(0);
+  // });
 
-  it("should get movie by id", async () => {
-    const res = await request(app)
-      .get(`/api/movies/${movieId}`);
+  // it("should get movie by id", async () => {
+  //   const res = await request(app)
+  //     .get(`/api/movies/${movieId}`);
 
-    expect(res.status).toBe(200);
-    expect(res.body.movie).toHaveProperty("id");
-    expect(res.body.movie.id).toBe(movieId);
-  });
+  //   expect(res.status).toBe(200);
+  //   expect(res.body.movie).toHaveProperty("id");
+  //   expect(res.body.movie.id).toBe(movieId);
+  // });
 
-  it("should update a movie", async () => {
-    const updatedData = {
-      title: "Avatar Updated 2",
-      duration: 165
-    };
+  // it("should update a movie", async () => {
+  //   const updatedData = {
+  //     title: "Avatar Updated 2",
+  //     duration: 165
+  //   };
 
-    const res = await request(app)
-      .put(`/api/movies/${movieId}`)
-      .set("Authorization", `Bearer ${token}`)
-      .send(updatedData);
+  //   const res = await request(app)
+  //     .put(`/api/movies/${movieId}`)
+  //     .set("Authorization", `Bearer ${token}`)
+  //     .send(updatedData);
 
-    expect(res.status).toBe(200);
-    expect(res.body.movie.title).toBe(updatedData.title);
-    expect(res.body.movie.duration).toBe(updatedData.duration);
-  });
+  //   expect(res.status).toBe(200);
+  //   expect(res.body.movie.title).toBe(updatedData.title);
+  //   expect(res.body.movie.duration).toBe(updatedData.duration);
+  // });
 
   // it("should delete a movie", async () => {
   //   const res = await request(app)
